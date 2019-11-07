@@ -1,0 +1,28 @@
+#@# vim: set filetype=yaml:
+
+####
+## @see https://docs.gitlab.com/ce/ci/yaml/README.html
+####
+
+image: docker:git
+
+stages:
+  - build_and_test
+
+variables:
+  CONTAINER_IMAGE: ${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}:latest
+
+.templates:
+  - &default_build_and_test
+    variables:
+      APP_ENV: test
+    before_script:
+      - echo ${DOCKER_HUB_PASSWORD} | docker login --username ${DOCKER_HUB_USERNAME} --password-stdin
+    script:
+      - docker build -t ${CONTAINER_IMAGE} .
+      - docker push ${CONTAINER_IMAGE}
+    environment: ${APP_ENV}
+
+build_and_test:
+  <<: *default_build_and_test
+  stage: build_and_test

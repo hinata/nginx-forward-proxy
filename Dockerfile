@@ -1,6 +1,6 @@
 #@# vim: set filetype=dockerfile:
 FROM alpine:3.15
-LABEL maintainer "github.com/hinata"
+LABEL maintainer "Takahiro INOUE <github.com/hinata>"
 
 ENV NGINX_VERSION 1.21.6
 

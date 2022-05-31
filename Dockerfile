@@ -2,6 +2,11 @@
 FROM alpine:3.15
 LABEL maintainer "Takahiro INOUE <github.com/hinata>"
 
+ARG DEFAULT_USER=user
+ARG DEFAULT_PASSWORD=password
+
+ENV USER $DEFAULT_USER
+ENV PASSWORD $DEFAULT_PASSWORD
 ENV NGINX_VERSION 1.21.6
 
 ##
@@ -10,12 +15,13 @@ ENV NGINX_VERSION 1.21.6
 
 WORKDIR /tmp
 
-RUN apk update && \
-    apk add       \
-      alpine-sdk  \
-      openssl-dev \
-      pcre-dev    \
-      zlib-dev
+RUN apk update &&   \
+    apk add         \
+      alpine-sdk    \
+      openssl-dev   \
+      pcre-dev      \
+      zlib-dev      \
+      apache2-utils
 
 RUN curl -LSs http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz -O                                             && \
     tar xf nginx-${NGINX_VERSION}.tar.gz                                                                             && \
@@ -29,6 +35,8 @@ RUN curl -LSs http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz -O        
     make -j $(nproc)                                                                                                 && \
     make install                                                                                                     && \
     rm -rf /tmp/*
+
+RUN htpasswd -bc /usr/local/nginx/.htpasswd $USER $PASSWORD
 
 ##
 # application deployment
